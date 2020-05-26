@@ -100,8 +100,30 @@ def createDrinks(payload):
     where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
-
-
+@app.route('/drinks/<int:id>', methods=['PATCH'])
+@requires_auth('patch:drinks')
+def updateDrinks(payload, id):
+    data = request.get_json()
+    if data is None:
+        abort(400)
+    title = data.get('title', None)
+    recipe = data.get('recipe', None)
+    drink = Drink.query.filter_by(id=id).one_or_none()
+    if drink is None:
+        abort(404)
+    if   title is None or recipe is None:
+        abort(400)
+    try:
+        drink.title = title
+        drink.recipe = json.dumps(recipe)
+        drink.update()
+        print()
+        return jsonify({
+            "success": True,
+            "drinks": drink.long()
+        })
+    except Exception:
+        abort(422)
 '''
 @TODO implement endpoint
     DELETE /drinks/<id>
