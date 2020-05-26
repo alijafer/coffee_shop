@@ -32,10 +32,14 @@ This will install all of the required packages we selected within the `requireme
 
 ## Running the server
 
-From within the `./src` directory first ensure you are working using your created virtual environment.
+From within the `./backend/src`  directory first ensure you are working using your created virtual environment.
 
 Each time you open a new terminal session, run:
-
+for Windows 
+```bash
+set FLASK_APP=flaskr
+```
+for linux or macOS
 ```bash
 export FLASK_APP=api.py;
 ```
@@ -48,7 +52,7 @@ flask run --reload
 
 The `--reload` flag will detect file changes and restart the server automatically.
 
-## Tasks
+
 
 ### Setup Auth0
 
