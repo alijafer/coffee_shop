@@ -109,19 +109,19 @@ def updateDrinks(payload, id):
         abort(400)
     title = data.get('title', None)
     recipe = data.get('recipe', None)
+    id_test = data.get('id', None)
     drink = Drink.query.filter_by(id=id).one_or_none()
     if drink is None:
         abort(404)
-    if title is None or recipe is None:
+    if title is None:
         abort(400)
     try:
         drink.title = title
         drink.recipe = json.dumps(recipe)
         drink.update()
-        print()
         return jsonify({
             "success": True,
-            "drinks": drink.long()
+            "drinks": [drink.long()]
         })
     except Exception:
         abort(422)
@@ -140,6 +140,8 @@ def deleteDrinks(payload, id):
     where id is the id of the deleted record
         or appropriate status code 422 indicating reason for failure
     '''
+    if id is None:
+        abort(404)
     drink = Drink.query.filter_by(id=id).one_or_none()
     if drink is None:
         abort(404)
@@ -186,7 +188,8 @@ def unprocessable(error):
     return jsonify({
         "success": False,
         "error": 401,
-        "message": "Unauthorized The server could not verify that you are" +
+        "message": "Unauthorized",
+        "description": " The server could not verify that you are" +
         " authorized to access the URL requested. You either supplied the " +
         "wrong credentials (e.g. a bad password), or your browser doesn't" +
         " understand how to supply the credentials required."
