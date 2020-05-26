@@ -41,18 +41,18 @@ def getAllDrinks():
     except Exception:
             abort(500)
 
-'''
-@TODO implement endpoint
-    GET /drinks-detail
-        it should require the 'get:drinks-detail' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks}
-    where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
-'''
+
 @app.route('/drinks-detail', methods=['GET'])
 @requires_auth('get:drinks-detail')
 def getAllDrinksDetail(payload):
+    '''
+    GET /drinks-detail
+        it is require the 'get:drinks-detail' permission
+        it is contain the drink.long() data representation
+    returns status code 200 and json {"success": True, "drinks": drinks}
+    where drinks is the list of drinks
+        or appropriate status code indicating reason for failure
+    '''
     try:
         drinks = Drink.query.all()
         long_drinks = [drink.long() for drink in drinks]
@@ -63,19 +63,19 @@ def getAllDrinksDetail(payload):
     except Exception:
             abort(401)
 
-'''
-@TODO implement endpoint
-    POST /drinks
-        it should create a new row in the drinks table
-        it should require the 'post:drinks' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink}
-    where drink an array containing only the newly created drink
-        or appropriate status code indicating reason for failure
-'''
+
 @app.route('/drinks', methods=['POST'])
 @requires_auth('post:drinks')
 def createDrinks(payload):
+    '''
+    POST /drinks
+        it is create a new row in the drinks table
+        it is require the 'post:drinks' permission
+        it is contain the drink.long() data representation
+    returns status code 200 and json {"success": True, "drinks": drink}
+    where drink an array containing only the newly created drink
+        or appropriate status code indicating reason for failure
+    '''
     try:
         data = request.get_json()
         title = data.get('title', None)
@@ -88,21 +88,22 @@ def createDrinks(payload):
         })
     except Exception:
         abort(422)
-'''
-@TODO implement endpoint
-    PATCH /drinks/<id>
-        where <id> is the existing model id
-        it should respond with a 404 error if <id> is not found
-        it should update the corresponding row for <id>
-        it should require the 'patch:drinks' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink}
-    where drink an array containing only the updated drink
-        or appropriate status code indicating reason for failure
-'''
+
+
 @app.route('/drinks/<int:id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
 def updateDrinks(payload, id):
+    '''
+    PATCH /drinks/<id>
+        where <id> is the existing model id
+        it is respond with a 404 error if <id> is not found
+        it is update the corresponding row for <id>
+        it is require the 'patch:drinks' permission
+        it is contain the drink.long() data representation
+    returns status code 200 and json {"success": True, "drinks": drink}
+    where drink an array containing only the updated drink
+        or appropriate status code 422 indicating reason for failure
+    '''
     data = request.get_json()
     if data is None:
         abort(400)
@@ -111,7 +112,7 @@ def updateDrinks(payload, id):
     drink = Drink.query.filter_by(id=id).one_or_none()
     if drink is None:
         abort(404)
-    if   title is None or recipe is None:
+    if title is None or recipe is None:
         abort(400)
     try:
         drink.title = title
@@ -124,18 +125,33 @@ def updateDrinks(payload, id):
         })
     except Exception:
         abort(422)
-'''
-@TODO implement endpoint
+
+
+@app.route('/drinks/<int:id>', methods=['DELETE'])
+@requires_auth('delete:drinks')
+def deleteDrinks(payload, id):
+    '''
     DELETE /drinks/<id>
         where <id> is the existing model id
-        it should respond with a 404 error if <id> is not found
-        it should delete the corresponding row for <id>
-        it should require the 'delete:drinks' permission
+        it is respond with a 404 error if <id> is not found
+        it is delete the corresponding row for <id>
+        it is require the 'delete:drinks' permission
     returns status code 200 and json {"success": True, "delete": id}
     where id is the id of the deleted record
-        or appropriate status code indicating reason for failure
-'''
-
+        or appropriate status code 422 indicating reason for failure
+    '''
+    drink = Drink.query.filter_by(id=id).one_or_none()
+    if drink is None:
+        abort(404)
+    try:
+        drink.delete()
+        return jsonify({
+            "success": True,
+            "delete": id,
+            'message': "Question successfully deleted"
+        })
+    except Exception:
+        abort(422)
 
 # Error Handling
 '''
@@ -152,12 +168,12 @@ def unprocessable(error):
                     }), 422
 
 
-'''
-error handler for 404
-    error handler should conform to general task above
-'''
 @app.errorhandler(404)
 def unprocessable(error):
+    '''
+error handler for 404
+    error handler is conform to general task above
+    '''
     return jsonify({
         "success": False,
         "error": 404,
@@ -165,11 +181,6 @@ def unprocessable(error):
         }), 404
 
 
-
-'''
-error handler for AuthError
-    error handler should conform to general task above
-'''
 @app.errorhandler(401)
 def unprocessable(error):
     return jsonify({
@@ -194,7 +205,7 @@ def unprocessable(error):
 @app.errorhandler(500)
 def bad_request(error):
     return jsonify({
-      "success": False, 
+      "success": False,
       "error": 500,
       "message": "Internal Server Error"
     }), 500
@@ -202,6 +213,10 @@ def bad_request(error):
 
 @app.errorhandler(AuthError)
 def handle_auth_error(exception):
+    '''
+error handler for AuthError
+    error handler is conform to general task above
+    '''
     response = jsonify(exception.error)
     response.status_code = exception.status_code
     return response
