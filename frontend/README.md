@@ -19,7 +19,7 @@ The Ionic Command Line Interface is required to serve and build the frontend. In
 This project uses NPM to manage software dependencies. NPM Relies on the package.json file located in the `frontend` directory of this repository. After cloning, open your terminal and run:
 
 ```bash
-npm install
+npm install -g ionic
 ```
 
 >_tip_: **npm i** is shorthand for **npm install**
