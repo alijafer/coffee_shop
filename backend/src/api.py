@@ -39,7 +39,7 @@ def getAllDrinks():
             'drinks': short_drinks
         })
     except Exception:
-            abort(500)
+        abort(500)
 
 
 @app.route('/drinks-detail', methods=['GET'])
@@ -61,7 +61,7 @@ def getAllDrinksDetail(payload):
             "drinks": long_drinks
         })
     except Exception:
-            abort(401)
+        abort(401)
 
 
 @app.route('/drinks', methods=['POST'])
@@ -154,6 +154,7 @@ def deleteDrinks(payload, id):
         })
     except Exception:
         abort(422)
+
 
 # Error Handling
 '''
